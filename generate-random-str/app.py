@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 
 # Load environment variables
-load_dotenv()
+#load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 openai.api_key = api_key
 
@@ -50,7 +50,7 @@ def get_fun_fact_from_openai(fact_card):
     """Generate a fun fact based on the structured fact card using OpenAI API."""
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o",  
+            model="gpt-4o-mini",  
             messages=[
                 {"role": "system", "content": "You are an expert in fun, surprising, and little-known facts. Your job is to retrieve **real** fun facts based on given criteria."},
                 {"role": "user", "content": f"Give me a **concise** (maximum 2-3 sentences, up to 40 words) fun fact about {fact_card['Fact Subject']} in {fact_card['Fact Place']} related to {fact_card['Fact Category']}. Make it **fascinating, funny, and easy to read**. Do NOT make up new facts, only return well-known fun facts from history, science, or pop culture."}
