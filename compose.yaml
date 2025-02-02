@@ -1,6 +1,7 @@
 services:
   web:
-    build: .
+    build:
+      context: ./generate-random-str .
     ports:
       - "8000:5000"
   redis:

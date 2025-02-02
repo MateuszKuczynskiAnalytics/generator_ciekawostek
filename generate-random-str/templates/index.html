@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Fact Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        h2, h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .fact-container {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            font-size: 24px;
+            line-height: 1.5;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 18px;
+            border: none;
+            background-color: #e94560;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #ff4f70;
+        }
+
+        select {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        #progress-container {
+            width: 80%;
+            background-color: #ccc;
+            border-radius: 10px;
+            margin: 20px 0;
+            height: 20px;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        #badges img {
+            height: 50px;
+            margin: 5px;
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔍 Fun Fact Generator</h1>
+
+    <!-- Progress Tracker -->
+    <h2 id="counter">Facts Generated: 0</h2>
+
+    <!-- Progress Bar -->
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <!-- Visual Badges -->
+    <h3>Badges Unlocked:</h3>
+    <div id="badges">
+        <img src="badge1.png" id="badge1" alt="Beginner Badge">
+        <img src="badge2.png" id="badge2" alt="Explorer Badge">
+        <img src="badge3.png" id="badge3" alt="Master Badge">
+    </div>
+
+    <!-- Fact Categories Dropdown -->
+    <select id="category">
+        <option value="">All Categories</option>
+        <option value="Science">Science</option>
+        <option value="History">History</option>
+        <option value="Animals">Animals</option>
+        <option value="Space">Space</option>
+    </select>
+
+    <!-- Fact Display -->
+    <div class="fact-container" id="fact">
+        Click the button to get a fun fact!
+    </div>
+    
+    <!-- Buttons -->
+    <button onclick="fetchFact()">Get Another Fun Fact</button>
+    <button onclick="shareFact()">Share This Fact</button>
+
+    <script>
+        let factCounter = 0;
+        const userGoal = 50; // Set user goal for personalized progress
+
+        function fetchFact() {
+            const category = document.getElementById('category').value;
+            let url = '/generate-fact';
+            if (category) {
+                url += `?category=${category}`;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the fact container with the new fun fact
+                    document.getElementById('fact').innerText = data.fun_fact;
+
+                    // Increment the counter and update progress tracker
+                    factCounter++;
+                    document.getElementById('counter').innerText = `Facts Generated: ${factCounter}`;
+                    updateProgress();
+                    unlockBadges();
+
+                    // Random reward system
+                    if (Math.random() < 0.1) {  // 10% chance for a reward
+                        alert("🎉 Congrats! You've unlocked a badge: 'Fun Fact Explorer'!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching fact:", error);
+                });
+        }
+
+        function updateProgress() {
+            const progress = Math.min((factCounter / userGoal) * 100, 100); // Ensure max is 100%
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            if (factCounter === userGoal) {
+                alert("🎉 Congratulations! You’ve reached your goal of 50 fun facts!");
+            }
+        }
+
+        function unlockBadges() {
+            if (factCounter === 10) {
+                document.getElementById('badge1').style.display = "inline";
+                alert("🎖️ You've unlocked the 'Beginner Badge'!");
+            }
+            if (factCounter === 25) {
+                document.getElementById('badge2').style.display = "inline";
+                alert("🎖️ You've unlocked the 'Explorer Badge'!");
+            }
+            if (factCounter === 50) {
+                document.getElementById('badge3').style.display = "inline";
+                alert("🎖️ You've unlocked the 'Master Badge'!");
+            }
+        }
+
+        function shareFact() {
+            const fact = document.getElementById('fact').innerText;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fact)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+
+</body>
+</html>
