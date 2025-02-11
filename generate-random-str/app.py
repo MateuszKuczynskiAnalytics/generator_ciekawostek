@@ -1,16 +1,19 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import openai
 import os
 import random
-import string
-from dotenv import load_dotenv
+import pymongo
 
 app = Flask(__name__)
 
-# Load environment variables
-#load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 openai.api_key = api_key
+
+# Connect to MongoDB
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongodb:27017/")  
+client = pymongo.MongoClient(MONGO_URI)
+db = client["fun_facts_db"]
+collection = db["generated_facts"]
 
 # Categories for fun facts
 FACT_CATEGORIES = [
@@ -126,6 +129,9 @@ def generate_fun_fact():
     
     # Generate a fun fact using OpenAI
     fun_fact = get_fun_fact_from_openai(fact_card)
+    
+    fact_entry = {"fact": fun_fact, "metadata": fact_card}
+    collection.insert_one(fact_entry)
     
     return jsonify({"fun_fact": fun_fact})
 
