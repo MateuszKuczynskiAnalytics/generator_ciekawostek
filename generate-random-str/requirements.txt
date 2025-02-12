@@ -1,6 +1,4 @@
 flask
 redis
 openai==0.28.0
-pymongo
-dnspython
 python-dotenv
